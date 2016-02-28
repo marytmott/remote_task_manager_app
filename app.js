@@ -38,4 +38,25 @@ http.createServer(function(req, res) {
 
 });
 
-http.listen(8080);
+// http.listen(8080);
+
+var currentSysInfo = {
+  cpuUsagePoints: null,
+  utlization: null,
+  processes: null,
+  threads: null,
+  handles: null,
+  upTime: null
+};
+
+var staticSysInfo = {
+  cpu: null,
+  maximumSpeed: null,
+  sockets: null,
+  cores: null,
+  logicalProcessors: null,
+  virtualization: true,
+  l1Cache: null,
+  l2Cache: null,
+  l3Cache: null
+};
