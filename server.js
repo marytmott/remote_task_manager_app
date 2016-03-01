@@ -4,14 +4,11 @@ var fs = require('fs'); // put this in middleware??
 var PORT = 8080;
 var server = http.createServer(requestHandler);
 var rs = require('./middleware/cpuPerc');
-var htmlDir = path.join(__dirname + '/html/');
-console.log(htmlDir);
+var public = path.join(__dirname + '/public');
 
 // rs.getStats();
 
 // server.on('request');******************** <-----
-
-// redirects for non-routes!!
 
 function requestHandler(req, res) {
   console.log(req.url);
@@ -20,42 +17,45 @@ function requestHandler(req, res) {
 
   switch(req.url) {
     case '/task-manager':
-      sendTaskManager(req, res);
+      taskManagerRoute(req, res, 'html');
+      break;
+    case '/taskManager.js':
+      taskManagerRoute(req, res, 'js');
       break;
     default:
       // redirect to root
       res.writeHead(302, { 'Location': '/task-manager' });
       res.end();
   }
-  // res.end('got it!');
-
-  // if (req.url.indexOf('task-manager') !== -1) {
-    // sendTaskManager(req, res);
-  // }
-
-
-
-  // parse URL
-  // if (req.url.indexOf('') !== -1) {
-
-  // } else if (req.url....)
-
-  // get header
 }
 
 // *** refactor this???
-function sendTaskManager(req, res) {
-  fs.readFile(htmlDir + 'task-manager.html', 'utf-8', function(err, html) {
+function taskManagerRoute(req, res, type) {
+  var file;
+  var headerType;
+
+  switch(type) {
+    case 'html':
+      file = public + '/html/task-manager.html';
+      headerType = 'text/html';
+      break;
+    case 'js':
+      file = public + '/scripts/taskManager.js';
+      headerType = 'text/javascript';
+      break;
+    // default?
+  }
+
+  fs.readFile(file, 'utf-8', function(err, contents) {
     if (err) {
       // return res.end(JSON.stringify(err));
       console.log(err);
     } else {
-      res.setHeader('Content-Type', 'text/html');
-      res.write(html)
+      res.setHeader('Content-Type', headerType);
+      res.write(contents)
       res.end();
       console.log('task m response', res);
     }
-
   });
 }
 
