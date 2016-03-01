@@ -9,12 +9,28 @@ console.log(htmlDir);
 
 // rs.getStats();
 
+// server.on('request');******************** <-----
+
+// redirects for non-routes!!
+
 function requestHandler(req, res) {
   console.log(req.url);
+
+  // check for get request????
+
+  switch(req.url) {
+    case '/task-manager':
+      sendTaskManager(req, res);
+      break;
+    default:
+      // redirect to root
+      res.writeHead(302, { 'Location': '/task-manager' });
+      res.end();
+  }
   // res.end('got it!');
 
   // if (req.url.indexOf('task-manager') !== -1) {
-    sendTaskManager(req, res);
+    // sendTaskManager(req, res);
   // }
 
 
