@@ -1,23 +1,16 @@
 // var http = require('http');
 var fs = require('fs');
+// var rs = require('./middleware/cpu').
 // var PORT = 8080;
 
+var statTimeout;
 
-function readInterval() {
+function getStats(cpuReadData, stopReading) {
 
-}
+  if (stopReading) {
+    return clearTimeout(statTimeout);
+  }
 
-// function calc(dataArr) {
-//   // if first time calling
-//   if (!dataArr.length) {
-//     calcStats(null);
-//   } else if (dataArr.length === 1) {
-//     calcStats
-//   }
-// }
-
-
-function getStats(cpuReadData) {
   // firstRead, secondRead...will need to pass something in to this function?
   fs.readFile('/proc/stat', 'utf8', function(err, data) {
     var reads = [];
@@ -63,16 +56,7 @@ function getStats(cpuReadData) {
     cpuRead.guest = parseInt(cpuLineArr[10]);
     cpuRead.guestNice = parseInt(cpuLineArr[11]);
 
-    // we need total time and idle time
-
-    // control what to do with input
-
-    // if no data yet
-    // + call new function
-    // add to new array and call again
-
     // ******* for timeout, what about execution of this....timeout 1 millisecond when called? not here??
-    // DRY THIS UP!
     if (!cpuReadData) {
       reads.push(cpuRead);
       // need to get info after 1 sec
@@ -86,45 +70,50 @@ function getStats(cpuReadData) {
         // add new snapshot, remove old, then calc
         cpuReadData.shift();
       }
-      console.log(cpuReadData);
       // call this again to refresh data
-      setTimeout(getStats, 1000, cpuReadData);
+      statTimeout = setTimeout(getStats, 1000, cpuReadData);
       calcCpuPerc(cpuReadData);
     }
   });
 }
 
-
-// another function to calc both
-
 function calcCpuPerc(cpuStates) {
   // get each index value in array and calc
-  console.log('calculating');
+  var read1 = cpuStates[0];
+  var read2 = cpuStates[1];
+
+  var firstIdle = idleCalc(read1);
+  var secondIdle = idleCalc(read2);
+  var firstNonIdle = nonIdleCalc(read1);
+  var secondNonIdle = nonIdleCalc(read2);
+
+  var firstTotal = firstIdle + firstNonIdle;
+  var secondTotal = secondIdle + secondNonIdle;
+
+  // differentiations
+  var totalDiff = firstTotal - secondTotal;
+  var idleDiff = firstIdle - secondIdle;
+
+  var cpuPercentage = (totalDiff - idleDiff)/totalDiff;
+
+  console.log('percentage', cpuPercentage);
 }
 
-
-
-// one snapshot
-// second snapshot
-
-function stopReading() {
-  clearInterval(intervalReading);
-  console.log('done');
+function idleCalc(cpuReading) {
+  return cpuReading.idleProcesses + cpuReading.iowait;
 }
+
+function nonIdleCalc(cpuReading) {
+  return cpuReading.userProcesses + cpuReading.niceProcesses + cpuReading.systemProcesses
+    + cpuReading.irq + cpuReading.softirq + cpuReading.steal;
+}
+
 
 getStats();
-// read the file every second
-// var intervalReading = setInterval(getStats, 1000);
 
 // test mode - stop doing this after 30 seconds
-// setTimeout(stopReading, 6000);
+setTimeout(getStats, 6000, null, true);
 
-
-// http.createServer(function(req, res) {
-
-// });
-
-// http.listen(8080);
 
 // var currentSysInfo = {
 //   cpuUsagePoints: null,
