@@ -1,19 +1,46 @@
 var http = require('http');
+var path = require('path');
+var fs = require('fs'); // put this in middleware??
 var PORT = 8080;
 var server = http.createServer(requestHandler);
 var rs = require('./middleware/cpuPerc');
+var htmlDir = path.join(__dirname + '/html/');
+console.log(htmlDir);
 
 // rs.getStats();
 
 function requestHandler(req, res) {
   console.log(req.url);
-  res.end('got it!');
+  // res.end('got it!');
 
+  // if (req.url.indexOf('task-manager') !== -1) {
+    sendTaskManager(req, res);
+  // }
+
+
+
+  // parse URL
   // if (req.url.indexOf('') !== -1) {
 
   // } else if (req.url....)
 
   // get header
+}
+
+// *** refactor this???
+function sendTaskManager(req, res) {
+  fs.readFile(htmlDir + 'task-manager.html', 'utf-8', function(err, html) {
+    if (err) {
+      // return res.end(JSON.stringify(err));
+      console.log(err);
+    } else {
+      res.setHeader('Content-Type', 'text/html');
+      res.write(html)
+      res.end();
+      console.log('task m response', res);
+    }
+
+  });
 }
 
 server.listen(PORT, function() {
