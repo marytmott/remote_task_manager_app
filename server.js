@@ -3,15 +3,15 @@ var path = require('path');
 var fs = require('fs'); // put this in middleware??
 var PORT = 8080;
 var server = http.createServer(requestHandler);
-var rs = require('./middleware/cpuPerc');
+var stats = require('./cpu-data/cpuPerc.js');
 var public = path.join(__dirname + '/public');
 
-// rs.getStats();
+stats.getStats();
 
 // server.on('request');******************** <-----
 
 function requestHandler(req, res) {
-  console.log(req.url);
+  console.log(req);
 
   // check for get request????
 
@@ -54,7 +54,7 @@ function taskManagerRoute(req, res, type) {
       res.setHeader('Content-Type', headerType);
       res.write(contents)
       res.end();
-      console.log('task m response', res);
+      // console.log('task m response', res);
     }
   });
 }
