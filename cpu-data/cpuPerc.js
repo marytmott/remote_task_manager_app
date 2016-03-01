@@ -34,7 +34,7 @@ function getStats(cpuReadData, stopReading) {
     dataArr = data.split('\n');
 
     for (var i = 0; i < dataArr.length; i++) {
-      if (dataArr[i].indexOf('cpu ') !== -1){
+      if (dataArr[i].indexOf('cpu ') !== -1) {
         cpuLine = dataArr[i];
         break;
       }
