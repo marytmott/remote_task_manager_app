@@ -3,15 +3,22 @@ var PORT = 8080;
 var server = http.createServer(requestHandler);
 var rs = require('./middleware/cpuPerc');
 
-rs.getStats();
+// rs.getStats();
 
 function requestHandler(req, res) {
+  console.log(req.url);
+  res.end('got it!');
 
+  // if (req.url.indexOf('') !== -1) {
+
+  // } else if (req.url....)
+
+  // get header
 }
 
-// server.listen(PORT, function() {
-//   console.log('server listening on port ' + PORT);
-// });
+server.listen(PORT, function() {
+  console.log('server listening on port ' + PORT);
+});
 
 
 
