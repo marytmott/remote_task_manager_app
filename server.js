@@ -3,10 +3,10 @@ var path = require('path');
 var fs = require('fs'); // put this in middleware??
 var PORT = 8080;
 var server = http.createServer(requestHandler);
-var stats = require('./cpu-data/cpuPerc.js');
+var stats = require('./cpu-data');
 var public = path.join(__dirname + '/public');
 
-stats.getStats();
+stats.percUsage.getStats();
 
 // server.on('request');******************** <-----
 
