@@ -1,8 +1,12 @@
 var fs = require('fs');
 
-var statTimeout;
+var statTimeout = null;
+var currCpuPerc = null;
+
+// check for utc times
 
 function getStats(cpuReadData, stopReading) {
+  // console.log(stopReading);
 
   if (stopReading) {
     console.log('stop timeout');
@@ -34,7 +38,7 @@ function getStats(cpuReadData, stopReading) {
     dataArr = data.split('\n');
 
     for (var i = 0; i < dataArr.length; i++) {
-      if (dataArr[i].indexOf('cpu ') !== -1) {
+      if (dataArr[i].indexOf('cpu ') !== -1){
         cpuLine = dataArr[i];
         break;
       }
@@ -70,9 +74,11 @@ function getStats(cpuReadData, stopReading) {
       }
       // call this again to refresh data
       statTimeout = setTimeout(getStats, 1000, cpuReadData);
-      return calcCpuPerc(cpuReadData);
+      calcCpuPerc(cpuReadData);
     }
   });
+  // for first time b/c of async
+  // return currCpuPerc;
 }
 
 
@@ -86,6 +92,7 @@ function nonIdleCalc(cpuReading) {
 }
 
 function calcCpuPerc(cpuStates) {
+
   // get each index value in array and calc
   var read1 = cpuStates[0];
   var read2 = cpuStates[1];
@@ -103,14 +110,35 @@ function calcCpuPerc(cpuStates) {
   var idleDiff = firstIdle - secondIdle;
 
   var cpuPercentage = (totalDiff - idleDiff)/totalDiff;
+  currCpuPerc = Math.round(cpuPercentage * 100);
 
-  console.log('percentage', cpuPercentage);
-  return cpuPercentage;
+
+
+  // console.log(Math.round(cpuPercentage * 100));
+  // console.log(currCpuPerc);
+
+
+  // console.log('percentage', cpuPercentage);
+  // return currCpuPerc;
 }
 
 // test mode - stop doing this after 30 seconds
-setTimeout(getStats, 6000, null, true);
+// this timeout will always execute when this script loads on server side, regardless of function being called
+// setTimeout(getStats, 6000, null, true);
+
+function getCurrCpuPerc() {
+  // currCpuPerc = currCpuPerc !== null ? currCpuPerc : null ;
+
+  // if (currCpuPerc !== null) {
+  //   // return function() {
+  //   console.log(currCpuPerc);
+  return currCpuPerc;
+    // }
+  // }
+  // return null;
+}
 
 module.exports = {
-  getStats: getStats
+  getStats: getStats,
+  currCpuPerc: getCurrCpuPerc
 };
