@@ -112,6 +112,8 @@ function calcCpuPerc(cpuStates) {
   var cpuPercentage = (totalDiff - idleDiff)/totalDiff;
   currCpuPerc = Math.round(cpuPercentage * 100);
 
+// need to make timeout, measure from request times > 30s
+console.log('calcd', currCpuPerc);
 
 
   // console.log(Math.round(cpuPercentage * 100));
@@ -127,15 +129,7 @@ function calcCpuPerc(cpuStates) {
 // setTimeout(getStats, 6000, null, true);
 
 function getCurrCpuPerc() {
-  // currCpuPerc = currCpuPerc !== null ? currCpuPerc : null ;
-
-  // if (currCpuPerc !== null) {
-  //   // return function() {
-  //   console.log(currCpuPerc);
   return currCpuPerc;
-    // }
-  // }
-  // return null;
 }
 
 module.exports = {
